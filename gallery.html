@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Галерея – Жду тебя</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Quicksand:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background: linear-gradient(135deg, #fff5f7 0%, #ffe4ec 100%);
+            min-height: 100vh;
+        }
+        .container { max-width: 1000px; margin: 0 auto; padding: 20px; }
+        header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 30px;
+            padding: 15px 30px;
+            margin-bottom: 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            position: sticky;
+            top: 20px;
+            z-index: 100;
+        }
+        .logo { font-size: 1.5rem; font-weight: 600; color: #ff6b8b; }
+        .logo i { margin-right: 10px; }
+        nav ul { display: flex; list-style: none; gap: 20px; flex-wrap: wrap; }
+        nav a { text-decoration: none; color: #ff6b8b; font-weight: 500; padding: 8px 20px; border-radius: 50px; transition: all 0.3s; }
+        nav a:hover, nav a.active { background: linear-gradient(135deg, #ff6b8b, #ffb7c5); color: white; }
+        .menu-btn { display: none; background: none; border: none; font-size: 1.8rem; color: #ff6b8b; cursor: pointer; }
+        
+        .gallery-container {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 40px;
+            padding: 40px;
+        }
+        .gallery-container h1 {
+            color: #ff6b8b;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        .gallery-item {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            transition: transform 0.3s;
+            cursor: pointer;
+        }
+        .gallery-item:hover {
+            transform: scale(1.02);
+        }
+        .gallery-item img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+        }
+        .gallery-caption {
+            padding: 10px;
+            text-align: center;
+            color: #ff6b8b;
+            font-size: 0.9rem;
+        }
+        
+        .add-photo {
+            margin-top: 30px;
+            text-align: center;
+        }
+        .add-photo input {
+            padding: 12px;
+            border: 2px solid #ffb7c5;
+            border-radius: 50px;
+            font-family: 'Quicksand', sans-serif;
+            width: 60%;
+        }
+        .add-photo button {
+            background: linear-gradient(135deg, #ff6b8b, #ffb7c5);
+            border: none;
+            color: white;
+            padding: 12px 25px;
+            border-radius: 50px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal img {
+            max-width: 90%;
+            max-height: 90%;
+            border-radius: 20px;
+        }
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 40px;
+            color: white;
+            font-size: 40px;
+            cursor: pointer;
+        }
+        
+        footer { text-align: center; padding: 30px; color: #aaa; margin-top: 40px; }
+        
+        @media (max-width: 768px) {
+            .menu-btn { display: block; }
+            nav { display: none; width: 100%; }
+            nav.show { display: block; }
+            nav ul { flex-direction: column; text-align: center; padding-top: 20px; }
+            .gallery-container { padding: 20px; }
+            .add-photo input { width: 100%; margin-bottom: 10px; }
+        }
+        
+        .floating-heart {
+            position: fixed;
+            color: #ff6b8b;
+            font-size: 24px;
+            pointer-events: none;
+            animation: floatUp 1s ease-out forwards;
+            z-index: 1000;
+        }
+        @keyframes floatUp {
+            0% { transform: translateY(0) scale(1); opacity: 1; }
+            100% { transform: translateY(-100px) scale(1.5); opacity: 0; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <div class="logo"><i class="fas fa-heart"></i> Жду тебя</div>
+        <button class="menu-btn" id="menuBtn"><i class="fas fa-bars"></i></button>
+        <nav id="nav">
+            <ul>
+                <li><a href="index.html">Главная</a></li>
+                <li><a href="diary.html">Дневник</a></li>
+                <li><a href="gallery.html" class="active">Фото</a></li>
+                <li><a href="letter.html">Письмо</a></li>
+                <li><a href="plans.html">Наши планы</a></li>
+                <li><a href="playlist.html">Плейлист</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <div class="gallery-container">
+        <h1><i class="fas fa-images"></i> Наши воспоминания</h1>
+        
+        <div class="gallery-grid" id="galleryGrid"></div>
+        
+        <div class="add-photo">
+            <input type="text" id="photoUrl" placeholder="Ссылка на фото (или загрузи фото в интернет)">
+            <input type="text" id="photoCaption" placeholder="Подпись к фото" style="width: 30%;">
+            <button id="addPhotoBtn"><i class="fas fa-plus"></i> Добавить</button>
+        </div>
+        <p style="text-align: center; font-size: 0.8rem; color: #aaa; margin-top: 10px;">
+            💡 Чтобы добавить фото – загрузи его на imgbb.com или другой хостинг и вставь ссылку
+        </p>
+    </div>
+
+    <footer>
+        <p>Каждое фото – это частичка нашей любви</p>
+    </footer>
+</div>
+
+<div class="modal" id="imageModal">
+    <span class="modal-close" id="closeModal">&times;</span>
+    <img id="modalImage" src="">
+</div>
+
+<script>
+    let photos = JSON.parse(localStorage.getItem('galleryPhotos')) || [
+        { url: "https://images.unsplash.com/photo-1516589178581-6cd7833ae3b2?w=300", caption: "Наше первое фото ❤️" },
+        { url: "https://images.unsplash.com/photo-1529333166437-7750a6dd5a70?w=300", caption: "Счастливые вместе" },
+        { url: "https://images.unsplash.com/photo-1518199266791-5375a83190a0?w=300", caption: "Я скучаю" }
+    ];
+    
+    function savePhotos() {
+        localStorage.setItem('galleryPhotos', JSON.stringify(photos));
+    }
+    
+    function deletePhoto(index) {
+        photos.splice(index, 1);
+        savePhotos();
+        renderGallery();
+    }
+    
+    function addPhoto(url, caption) {
+        if(!url.trim()) return;
+        photos.push({ url: url, caption: caption || "Наше воспоминание" });
+        savePhotos();
+        renderGallery();
+    }
+    
+    function renderGallery() {
+        const container = document.getElementById('galleryGrid');
+        if(!container) return;
+        
+        if(photos.length === 0) {
+            container.innerHTML = '<div style="text-align: center; padding: 50px; grid-column: 1/-1;">Добавьте ваши совместные фото ❤️</div>';
+            return;
+        }
+        
+        container.innerHTML = photos.map((photo, idx) => `
+            <div class="gallery-item" onclick="openModal('${photo.url}')">
+                <img src="${photo.url}" alt="${photo.caption}" onerror="this.src='https://via.placeholder.com/300?text=Фото+не+загрузилось'">
+                <div class="gallery-caption">
+                    ${photo.caption}
+                    <span onclick="event.stopPropagation(); deletePhoto(${idx})" style="color: #ffb7c5; margin-left: 10px; cursor: pointer;">
+                        <i class="fas fa-trash-alt"></i>
+                    </span>
+                </div>
+            </div>
+        `).join('');
+    }
+    
+    function openModal(url) {
+        const modal = document.getElementById('imageModal');
+        const modalImg = document.getElementById('modalImage');
+        modal.style.display = 'flex';
+        modalImg.src = url;
+    }
+    
+    document.getElementById('addPhotoBtn')?.addEventListener('click', () => {
+        const url = document.getElementById('photoUrl').value;
+        const caption = document.getElementById('photoCaption').value;
+        addPhoto(url, caption);
+        document.getElementById('photoUrl').value = '';
+        document.getElementById('photoCaption').value = '';
+    });
+    
+    document.getElementById('closeModal')?.addEventListener('click', () => {
+        document.getElementById('imageModal').style.display = 'none';
+    });
+    
+    renderGallery();
+    
+    document.body.addEventListener('click', function(e) {
+        const heart = document.createElement('div');
+        heart.className = 'floating-heart';
+        heart.innerHTML = '<i class="fas fa-heart"></i>';
+        heart.style.left = e.clientX + 'px';
+        heart.style.top = e.clientY + 'px';
+        document.body.appendChild(heart);
+        setTimeout(() => heart.remove(), 1000);
+    });
+    
+    const menuBtn = document.getElementById('menuBtn');
+    const nav = document.getElementById('nav');
+    if(menuBtn) menuBtn.addEventListener('click', () => nav.classList.toggle('show'));
+</script>
+</body>
+</html>
